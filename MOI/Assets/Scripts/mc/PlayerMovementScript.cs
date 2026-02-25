@@ -28,6 +28,7 @@ public class PlayerMovementScript : MonoBehaviour
     void Update()
     {
         HorizontalMovement();
+        WallSliding();
         GravityHandle();
     }
 
@@ -46,6 +47,7 @@ public class PlayerMovementScript : MonoBehaviour
         if (_parentScript._inputScript.WallCheck() && !_parentScript._inputScript.GroundCheck() && _parentScript._inputScript.HorizontalInput != 0)
         {
             isWallSliding = true;
+            _parentScript._rb.velocity = new Vector2(_parentScript._rb.velocity.x, Mathf.Max(_parentScript._rb.velocity.y, -wallSlideSpeed));
         }
         else
         {
