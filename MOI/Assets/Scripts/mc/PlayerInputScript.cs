@@ -29,7 +29,12 @@ public class PlayerInputScript : MonoBehaviour
 
     internal bool GroundCheck()
     {
-        return Physics2D.OverlapCircle(_parentScript._groundCheckTransform.position, 0.1f, _parentScript._groundLayerMask);
+        return Physics2D.OverlapCircle(_parentScript._groundCheckTransform.position, _parentScript.groundCheckRadius, _parentScript._groundLayerMask);
+    }
+
+    internal bool WallCheck()
+    {
+        return Physics2D.OverlapBox(_parentScript._wallCheckTransform.position, _parentScript.wallCheckSize, 0f, _parentScript._wallLayerMask);
     }
 
 }

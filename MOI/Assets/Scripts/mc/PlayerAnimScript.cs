@@ -8,10 +8,12 @@ public class PlayerAnimScript : MonoBehaviour
 
     internal string CurrentAnimState;
 
+    #region Anim Names
     private string IDLE_ANIM_NAME = "idle";
     private string RUN_ANIM_NAME = "run";
     private string JUMP_UP_ANIM_NAME = "jump_up";
     private string JUMP_DOWN_ANIM_NAME = "jump_down";
+    #endregion
 
     private void Start()
     {
@@ -24,33 +26,45 @@ public class PlayerAnimScript : MonoBehaviour
 
     private void Update()
     {
-        if (_parentScript._inputScript.HorizontalInput > 0)
-            _parentScript._spriteRenderer.flipX = false;
-        else
-            _parentScript._spriteRenderer.flipX = true;
-
-
         if (_parentScript._rb.velocity.y != 0 && !_parentScript._inputScript.GroundCheck())
         {
-            if (_parentScript._rb.velocity.y > 0)
-            {
-                _parentScript.ChangeAnimState(JUMP_UP_ANIM_NAME);
-                return;
-            }
-            else
-            {
-                _parentScript.ChangeAnimState(JUMP_DOWN_ANIM_NAME);
-                return;
-            }
+            JumpAnims();
+            return;
         }
 
         if (_parentScript._inputScript.HorizontalInput != 0)
         {
-            _parentScript.ChangeAnimState(RUN_ANIM_NAME);
-            return;
+            RunAnim();
+            return; 
         }
 
 
+
+
         _parentScript.ChangeAnimState(IDLE_ANIM_NAME);
+    }
+
+    private void JumpAnims()
+    {
+        if (_parentScript._rb.velocity.y > 0)
+        {
+            _parentScript.ChangeAnimState(JUMP_UP_ANIM_NAME);
+            return;
+        }
+        else
+        {
+            _parentScript.ChangeAnimState(JUMP_DOWN_ANIM_NAME);
+            return;
+        }
+        
+
+    }
+
+    private void RunAnim()
+    {
+        _parentScript.ChangeAnimState(RUN_ANIM_NAME);
+        return;
+        
+
     }
 }
