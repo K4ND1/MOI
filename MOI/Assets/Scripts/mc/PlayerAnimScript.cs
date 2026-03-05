@@ -13,6 +13,7 @@ public class PlayerAnimScript : MonoBehaviour
     private string RUN_ANIM_NAME = "run";
     private string JUMP_UP_ANIM_NAME = "jump_up";
     private string JUMP_DOWN_ANIM_NAME = "jump_down";
+    private string SLIDE_DOWN_ANIM_NAME = "slide_down";
     #endregion
 
     private void Start()
@@ -26,22 +27,27 @@ public class PlayerAnimScript : MonoBehaviour
 
     private void Update()
     {
-        if (_parentScript._rb.velocity.y != 0 && !_parentScript._inputScript.GroundCheck())
+        if (_parentScript._movementScript.isWallSliding)
+        {
+            _parentScript.ChangeAnimState(SLIDE_DOWN_ANIM_NAME);
+            return;
+        }
+
+        if (_parentScript._rb.velocity.y != 0 && !_parentScript._movementScript.GroundCheck())
         {
             JumpAnims();
             return;
         }
 
-        if (_parentScript._inputScript.HorizontalInput != 0)
+        if (_parentScript._movementScript.HorizontalInput != 0)
         {
-            RunAnim();
+            RunAnims();
             return; 
         }
 
-
-
-
         _parentScript.ChangeAnimState(IDLE_ANIM_NAME);
+
+
     }
 
     private void JumpAnims()
@@ -60,7 +66,7 @@ public class PlayerAnimScript : MonoBehaviour
 
     }
 
-    private void RunAnim()
+    private void RunAnims()
     {
         _parentScript.ChangeAnimState(RUN_ANIM_NAME);
         return;

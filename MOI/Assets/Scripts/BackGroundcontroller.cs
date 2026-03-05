@@ -8,7 +8,7 @@ public class BackGroundcontroller : MonoBehaviour
     public GameObject cam;
     public float parallaxEffect;
 
-    [SerializeField] private static float parallaxEffectMultiplier = 0.5f;
+    [SerializeField] private static float parallaxEffectMultiplier = 0.25f;
 
     void Start()
     {
