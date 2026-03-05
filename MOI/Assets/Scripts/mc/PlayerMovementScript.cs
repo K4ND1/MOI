@@ -44,7 +44,6 @@ public class PlayerMovementScript : MonoBehaviour
         WallSliding();
         GravityHandle();
         WallJumpProcess();
-        //Walljump();
     }
     #endregion
 
@@ -63,7 +62,6 @@ public class PlayerMovementScript : MonoBehaviour
     {
         if (!GroundCheck() && isWallSliding && Input.GetKeyDown(KeyCode.Space))
         {
-            Debug.Log("Wall Jump");
             StartCoroutine(WallJump());
         }
     }
@@ -88,6 +86,8 @@ public class PlayerMovementScript : MonoBehaviour
 
     private void ForceFilp()
     {
+        Debug.Log("Force Flip");
+
         _parentScript.isFacingRight = !_parentScript.isFacingRight;
 
         Vector3 ls = transform.localScale;

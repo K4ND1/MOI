@@ -27,7 +27,7 @@ public class PlayerAnimScript : MonoBehaviour
 
     private void Update()
     {
-        if (_parentScript._movementScript.isWallSliding)
+        if (_parentScript._movementScript.WallCheck() && !_parentScript._movementScript.GroundCheck())
         {
             _parentScript.ChangeAnimState(SLIDE_DOWN_ANIM_NAME);
             return;
