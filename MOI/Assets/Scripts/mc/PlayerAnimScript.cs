@@ -6,71 +6,45 @@ public class PlayerAnimScript : MonoBehaviour
 {
     [SerializeField] private PlayerParentScript _parentScript;
 
-    internal string CurrentAnimState;
+    private int currentAnimState;
+    private int currentPiro;
 
     #region Anim Names
-    private string IDLE_ANIM_NAME = "idle";
-    private string RUN_ANIM_NAME = "run";
-    private string JUMP_UP_ANIM_NAME = "jump_up";
-    private string JUMP_DOWN_ANIM_NAME = "jump_down";
-    private string SLIDE_DOWN_ANIM_NAME = "slide_down";
+    internal static readonly int Idle = Animator.StringToHash("idle");
+    internal static readonly int Run = Animator.StringToHash("run");
+    internal static readonly int JumpUp = Animator.StringToHash("jump_up");
+    internal static readonly int JumpDown = Animator.StringToHash("jump_down");
+    internal static readonly int SlideDown = Animator.StringToHash("slide_down");
+    internal static readonly int WallJump = Animator.StringToHash("wall_jump");
+    [SerializeField] private float WallJump_t = 0.5f;
     #endregion
 
-    private void Start()
+    private float lockedTill;
+
+    /*
+     * List of priorities for animations:
+     * Walljump > JumpUp > SlideDown > JumpDown > Run > Idle
+     * 
+     */
+
+
+
+
+    internal void StartGivenAnimation(int anim_id, float locked_time)
     {
-        if (CurrentAnimState == null)
-            CurrentAnimState = IDLE_ANIM_NAME;
+        if (anim_id == currentAnimState || Time.time < lockedTill) return;
 
-        if (_parentScript == null)
-            _parentScript = GetComponent<PlayerParentScript>();
-    }
+        currentAnimState = anim_id;
 
-    private void Update()
-    {
-        if (_parentScript._movementScript.WallCheck() && !_parentScript._movementScript.GroundCheck())
+        _parentScript._animator.CrossFade(LockedState(anim_id, locked_time), 0, 0);
+
+        // Method to lock the animation for a certain time, preventing it from being interrupted by other animations
+        int LockedState(int s, float t)
         {
-            _parentScript.ChangeAnimState(SLIDE_DOWN_ANIM_NAME);
-            return;
+            lockedTill = Time.time + t;
+            return s;
         }
-
-        if (_parentScript._rb.velocity.y != 0 && !_parentScript._movementScript.GroundCheck())
-        {
-            JumpAnims();
-            return;
-        }
-
-        if (_parentScript._movementScript.HorizontalInput != 0)
-        {
-            RunAnims();
-            return; 
-        }
-
-        _parentScript.ChangeAnimState(IDLE_ANIM_NAME);
-
 
     }
 
-    private void JumpAnims()
-    {
-        if (_parentScript._rb.velocity.y > 0)
-        {
-            _parentScript.ChangeAnimState(JUMP_UP_ANIM_NAME);
-            return;
-        }
-        else
-        {
-            _parentScript.ChangeAnimState(JUMP_DOWN_ANIM_NAME);
-            return;
-        }
-        
-
-    }
-
-    private void RunAnims()
-    {
-        _parentScript.ChangeAnimState(RUN_ANIM_NAME);
-        return;
-        
-
-    }
 }

@@ -60,17 +60,10 @@ public class PlayerParentScript : MonoBehaviour
     }
     #endregion
 
-    internal void ChangeAnimState(string newState)
-    {
-        if (_animScript.CurrentAnimState == newState) return;
-
-        _animScript.CurrentAnimState = newState;
-        _animator.Play(newState);
-    }
 
     internal void ProcessFlip()
     {
-        if (_movementScript.isWallJumping) return;
+        if (_movementScript.canMove == false) return;
 
         if (isFacingRight && _movementScript.HorizontalInput < 0 || !isFacingRight && _movementScript.HorizontalInput > 0)
         {

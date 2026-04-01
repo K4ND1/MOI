@@ -6,6 +6,7 @@ public class CameraControllScript : MonoBehaviour
 {
     [SerializeField] private Vector3 offset;
     [SerializeField] private float damping;
+    private Vector3 active_offset = new Vector3(0,-0.2f,0);
 
     public Transform _target;
 
@@ -20,10 +21,15 @@ public class CameraControllScript : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector3 targetPos = _target.position + offset;
+        Vector3 targetPos = _target.position + offset + active_offset;
         targetPos.z = transform.position.z;
 
         transform.position = Vector3.SmoothDamp(transform.position, targetPos, ref vel, damping);
 
+    }
+
+    private void Update()
+    {
+        active_offset.y = Input.GetAxis("Vertical") * 3.7f;
     }
 }
