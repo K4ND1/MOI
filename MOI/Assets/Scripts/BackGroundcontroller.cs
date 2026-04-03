@@ -20,11 +20,16 @@ public class BackGroundcontroller : MonoBehaviour
 
     void Update()
     {
+        /// Parallax effect and infinite scrolling should 
+        /// be placed in a seperete method to clean the code up
+
+        // Move the background in different speeds in relation to the camera movement
         float dist = cam.transform.position.x * parallaxEffect;
         float move = cam.transform.position.x * (1 - parallaxEffect);
 
         transform.position = new Vector3(startPos + dist, transform.position.y, transform.position.z);
 
+        // Infinite scrolling effect
         if (move > startPos + length)
         {
             startPos += length;

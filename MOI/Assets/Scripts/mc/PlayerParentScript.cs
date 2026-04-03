@@ -25,10 +25,11 @@ public class PlayerParentScript : MonoBehaviour
     [SerializeField] internal Transform _wallCheckTransform;
     [SerializeField] internal LayerMask _wallLayerMask;
     [SerializeField] internal Vector2 wallCheckSize = new Vector2(0.5f, 0.5f);
+    
+    internal bool isFacingRight = true;
     #endregion
 
 
-    internal bool isFacingRight = true;
 
     #region Unity Methods
     private void Awake()
@@ -42,7 +43,12 @@ public class PlayerParentScript : MonoBehaviour
         if (_spriteRenderer == null) _spriteRenderer = GetComponent<SpriteRenderer>();
         #endregion
 
+        #region Child Transforms
         if (_groundCheckTransform == null) _groundCheckTransform = gameObject.transform.Find("GroundCheck");
+        if (_wallCheckTransform == null) _wallCheckTransform = gameObject.transform.Find("WallCheck");
+        #endregion
+
+
     }
 
     private void Update()
@@ -52,9 +58,11 @@ public class PlayerParentScript : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
+        // Draw the ground check sphere
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(_groundCheckTransform.position, 0.1f);
 
+        // Draw the wall check box
         Gizmos.color = Color.blue;
         Gizmos.DrawWireCube(_wallCheckTransform.position, wallCheckSize);
     }
@@ -63,8 +71,9 @@ public class PlayerParentScript : MonoBehaviour
 
     internal void ProcessFlip()
     {
-        if (_movementScript.canMove == false) return;
+        if (_movementScript.canMove == false) return; // Don't flip when player can't move
 
+        // Based on player's horizontal input, flip accordingly
         if (isFacingRight && _movementScript.HorizontalInput < 0 || !isFacingRight && _movementScript.HorizontalInput > 0)
         {
             isFacingRight = !isFacingRight;
