@@ -7,22 +7,27 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [Header("Camera Controls")]
-    public KeyCode CameraUp = KeyCode.UpArrow;
-    public KeyCode CameraDown = KeyCode.DownArrow;
+    public KeyCode CameraUp = KeyCode.W;
+    public KeyCode CameraDown = KeyCode.S;
 
     [Header("Player Controls")]
     public KeyCode MovePlayerLeft = KeyCode.A;
     public KeyCode MovePlayerRight = KeyCode.D;
     public KeyCode PlayerJump = KeyCode.Space;
 
+    [Header("Movement Keybinds")]
+    public KeyCode AttackUp = KeyCode.UpArrow;
+    public KeyCode AttackDown = KeyCode.DownArrow;
+    public KeyCode AttackLeft = KeyCode.LeftArrow;
+    public KeyCode AttackRight = KeyCode.RightArrow;
+
     public static GameManager Instance { get; private set; }
 
-    // Dictionary to remember the current smoothed value for each key combination
+    // Dictionary to store a current unique value for each combination of keys
     private Dictionary<string, float> axisStates = new Dictionary<string, float>();
 
     private void Awake()
     {
-        // Standard Singleton setup
         if (Instance == null)
         {
             Instance = this;
@@ -35,11 +40,12 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Gets a smoothed axis value for any two keys. 
+    /// Gets a smoothed axis value for any two keys.
+    /// The axis name will be generated based on the key combination (e.g., "UpArrow_DownArrow").
     /// </summary>
     public float GetCustomAxis(KeyCode posKey, KeyCode negKey, float sensitivity = 3f, float gravity = 3f)
     {
-        // Create a unique text ID for this combination (e.g., "UpArrow_DownArrow")
+        // Create a unique text ID for this combination
         string axisID = $"{posKey}_{negKey}";
 
         // If this is the first time a script asked for these keys, add them to the dictionary at 0

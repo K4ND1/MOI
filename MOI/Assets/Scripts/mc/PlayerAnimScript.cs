@@ -9,12 +9,19 @@ public class PlayerAnimScript : MonoBehaviour
     private int currentAnimState;
 
     #region Anim Names
+    // Movement Animations
     internal static readonly int Idle = Animator.StringToHash("idle");
     internal static readonly int Run = Animator.StringToHash("run");
     internal static readonly int JumpUp = Animator.StringToHash("jump_up");
     internal static readonly int JumpDown = Animator.StringToHash("jump_down");
     internal static readonly int SlideDown = Animator.StringToHash("slide_down");
     internal static readonly int WallJump = Animator.StringToHash("wall_jump");
+
+    // Combat Animations
+    internal static readonly int AttackDown = Animator.StringToHash("attack_down");
+    internal static readonly int AttackLeft = Animator.StringToHash("attack_left");
+    internal static readonly int AttackUp = Animator.StringToHash("attack_up");
+    internal static readonly int AttackRight = Animator.StringToHash("attack_right");
     #endregion
 
     private float lockedTill;

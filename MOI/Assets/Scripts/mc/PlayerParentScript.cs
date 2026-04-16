@@ -56,6 +56,12 @@ public class PlayerParentScript : MonoBehaviour
         ProcessFlip();
     }
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawRay(_wallCheckTransform.position, Vector2.right * (isFacingRight ? 1 : -1) * wallCheckSize.x);
+    }
+
     private void OnDrawGizmosSelected()
     {
         // Draw the ground check sphere
@@ -65,19 +71,26 @@ public class PlayerParentScript : MonoBehaviour
         // Draw the wall check box
         Gizmos.color = Color.blue;
         Gizmos.DrawWireCube(_wallCheckTransform.position, wallCheckSize);
+
+        // Draw attack range circles for debugging purposes
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(_movementScript.attackUpPosition.position, _movementScript.attackRange);
+        Gizmos.DrawWireSphere(_movementScript.attackDownPosition.position, _movementScript.attackRange);
+        Gizmos.DrawWireSphere(_movementScript.attackRightPosition.position, _movementScript.attackRange);
+        Gizmos.DrawWireSphere(_movementScript.attackLeftPosition.position, _movementScript.attackRange);
+
     }
     #endregion
 
 
     internal void ProcessFlip()
     {
+
         if (_movementScript.canMove == false) return; // Don't flip when player can't move
 
-        // Based on player's horizontal input, flip accordingly
         if (isFacingRight && _movementScript.HorizontalInput < 0 || !isFacingRight && _movementScript.HorizontalInput > 0)
         {
             isFacingRight = !isFacingRight;
-
             Vector3 ls = transform.localScale;
             ls.x *= -1f;
             transform.localScale = ls;
