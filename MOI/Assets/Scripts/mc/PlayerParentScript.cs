@@ -76,8 +76,8 @@ public class PlayerParentScript : MonoBehaviour
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(_movementScript.attackUpPosition.position, _movementScript.attackRange);
         Gizmos.DrawWireSphere(_movementScript.attackDownPosition.position, _movementScript.attackRange);
-        Gizmos.DrawWireSphere(_movementScript.attackRightPosition.position, _movementScript.attackRange);
-        Gizmos.DrawWireSphere(_movementScript.attackLeftPosition.position, _movementScript.attackRange);
+        Gizmos.DrawWireSphere(_movementScript.attackFrontPosition.position, _movementScript.attackRange);
+        Gizmos.DrawWireSphere(_movementScript.attackBackPosition.position, _movementScript.attackRange);
 
     }
     #endregion

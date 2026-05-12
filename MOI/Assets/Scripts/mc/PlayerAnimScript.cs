@@ -19,10 +19,17 @@ public class PlayerAnimScript : MonoBehaviour
 
     // Combat Animations
     internal static readonly int AttackDown = Animator.StringToHash("attack_down");
-    internal static readonly int AttackLeft = Animator.StringToHash("attack_left");
+    internal static readonly int AttackBack = Animator.StringToHash("attack_left");
     internal static readonly int AttackUp = Animator.StringToHash("attack_up");
-    internal static readonly int AttackRight = Animator.StringToHash("attack_right");
+    internal static readonly int AttackFront = Animator.StringToHash("attack_right");
+
     #endregion
+    [Header("Animation Lock Times")]
+    [Header("Combat Animations")]
+    [SerializeField] internal float attackDownLockTime = 0.5f;
+    [SerializeField] internal float attackFrontLockTime = 0.34f;
+    [SerializeField] internal float attackBackLockTime = 0.34f;
+    [SerializeField] internal float attackUpLockTime = 0.34f;
 
     private float lockedTill;
 

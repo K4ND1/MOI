@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 public class PlayerMovementScript : MonoBehaviour
@@ -43,8 +44,8 @@ public class PlayerMovementScript : MonoBehaviour
     
     [SerializeField] internal Transform attackUpPosition;
     [SerializeField] internal Transform attackDownPosition;
-    [SerializeField] internal Transform attackRightPosition;
-    [SerializeField] internal Transform attackLeftPosition;
+    [SerializeField] internal Transform attackFrontPosition;
+    [SerializeField] internal Transform attackBackPosition;
 
 
     [SerializeField] internal float pushBackMltp = 5f;
@@ -203,21 +204,22 @@ public class PlayerMovementScript : MonoBehaviour
         Vector2 recoilDir = Vector2.zero;
         Vector2 attackPos = Vector2.zero;
 
-        // Make the animation time slightly longer than the attack duration to ensure it plays fully even if the attack hits something immediately.
-        float animDuration = basicAttackTime + 0.05f; 
+        float animationTime = 0;
 
         // Determine attack direction, position, and animation
         if (keyPressed == GameManager.Instance.AttackDown)
         {
             recoilDir = Vector2.up;
             attackPos = attackDownPosition.position;
-            _parentScript._animScript.StartGivenAnimation(PlayerAnimScript.AttackDown, animDuration);
+            animationTime = _parentScript._animScript.attackDownLockTime;
+            _parentScript._animScript.StartGivenAnimation(PlayerAnimScript.AttackDown, animationTime);
         }
         else if (keyPressed == GameManager.Instance.AttackUp)
         {
             recoilDir = Vector2.down;
             attackPos = attackUpPosition.position;
-            _parentScript._animScript.StartGivenAnimation(PlayerAnimScript.AttackUp, animDuration);
+            animationTime = _parentScript._animScript.attackUpLockTime;
+            _parentScript._animScript.StartGivenAnimation(PlayerAnimScript.AttackUp, animationTime);
         }
         else
         {
@@ -226,40 +228,45 @@ public class PlayerMovementScript : MonoBehaviour
 
             if (isPressingRight == _parentScript.isFacingRight)
             {
-                attackPos = attackRightPosition.position;
-                _parentScript._animScript.StartGivenAnimation(PlayerAnimScript.AttackRight, animDuration);
+                attackPos = attackFrontPosition.position;
+                animationTime = _parentScript._animScript.attackFrontLockTime;
+                _parentScript._animScript.StartGivenAnimation(PlayerAnimScript.AttackFront, animationTime);
+                recoilDir = isPressingRight ? Vector2.left : Vector2.right; // Recoil direction is opposite to the attack direction
             }
-            else
+            else if (isPressingRight != _parentScript.isFacingRight)
             {
-                attackPos = attackLeftPosition.position;
-                _parentScript._animScript.StartGivenAnimation(PlayerAnimScript.AttackLeft, animDuration);
+
+                attackPos = attackBackPosition.position;
+                animationTime = _parentScript._animScript.attackBackLockTime;
+                _parentScript._animScript.StartGivenAnimation(PlayerAnimScript.AttackBack, animationTime);
+                recoilDir = isPressingRight ? Vector2.left : Vector2.right; // Recoil direction is opposite to the attack direction
             }
+
         }
 
-        // Collison check for attackable objects
-        bool hitSomething = Physics2D.OverlapCircle(attackPos, attackRange, attackableLayerMask);
+        Collider2D objectHit = Physics2D.OverlapCircle(attackPos, attackRange, attackableLayerMask);
 
-        if (hitSomething)
+        if (objectHit != null)
         {
 
-            // Apply recoil to the player
+            // Apply recoil to the player if they hit something
             _parentScript._rb.velocity = recoilDir * attackPower;
-            float gravStorage = baseGravity;
-            baseGravity = 0f;
-
             yield return new WaitForSeconds(basicAttackTime);
-
-            baseGravity = gravStorage; // Restore physics
+            // Note: We don't restore old velocity here because the recoil creates a new trajectory
         }
         else
         {
+            // If they didn't hit anything, wait out the rest of the attack time
             yield return new WaitForSeconds(basicAttackTime);
+
         }
 
-        // Restore movement at the very end
         canMove = true;
+
     }
     #endregion
+
+
 
     #region Physics Methods
     private void WallSliding()

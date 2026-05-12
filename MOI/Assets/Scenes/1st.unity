@@ -16580,11 +16580,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 538271175}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.5, y: 1.4, z: 0}
+  m_LocalPosition: {x: -1, y: 1.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 841726401}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &609916110
 GameObject:
@@ -16610,11 +16610,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 609916110}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.5, y: 1.4, z: 0}
+  m_LocalPosition: {x: 1, y: 1.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 841726401}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &611236644
 GameObject:
@@ -16969,8 +16969,8 @@ Transform:
   m_Children:
   - {fileID: 1054090200}
   - {fileID: 55301548}
-  - {fileID: 538271176}
   - {fileID: 609916111}
+  - {fileID: 538271176}
   m_Father: {fileID: 1151744756}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -18194,7 +18194,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1054090199}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.75, z: 0}
+  m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 841726401}
@@ -18467,12 +18467,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   basicAttackTime: 0.005
-  attackRange: 1
+  attackRange: 0.72
   attackUpPosition: {fileID: 1054090200}
   attackDownPosition: {fileID: 55301548}
-  attackRightPosition: {fileID: 609916111}
-  attackLeftPosition: {fileID: 538271176}
-  pushBackMltp: 10
+  attackFrontPosition: {fileID: 609916111}
+  attackBackPosition: {fileID: 538271176}
+  pushBackMltp: 12
 --- !u!61 &1151744762
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -18512,6 +18512,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _parentScript: {fileID: 1151744760}
+  attackDownLockTime: 0.5
+  attackFrontLockTime: 0.33333334
+  attackBackLockTime: 0.33333334
+  attackUpLockTime: 0.33333334
 --- !u!1 &1154087445
 GameObject:
   m_ObjectHideFlags: 0
