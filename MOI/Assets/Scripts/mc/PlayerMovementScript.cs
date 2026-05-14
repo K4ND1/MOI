@@ -7,55 +7,19 @@ public class PlayerMovementScript : MonoBehaviour
 {
     [SerializeField] private PlayerParentScript _parentScript;
 
-    #region Movement Variables
-    [Header("Horizontal Movement Variables")]
-    internal bool canMove = true;
-    internal float HorizontalInput;
-    [SerializeField] internal float movementSpeed = 5f;
-    [SerializeField] internal float jumpForce = 10f;
-    private float accelerator = 1f;
 
-    [Header("Jump Variables")]
-    internal bool isJumping = false;
-
-    [Header("Wall Movement Variables")]
-    [SerializeField] internal float wallSlideSpeed = 2f;
-    internal bool isWallSliding = false;
-
-    [Header("Wall Jump Variables")]
-    internal float wallJumpDirection;
-    [SerializeField] internal float wallJumpTime = 0.5f;
-    [SerializeField] internal Vector2 wallJumpForce = new Vector2(5f, 10f);
-    #endregion
-
-    #region External Forces Variables
-    [Header("Gravity Variables")]
-    [SerializeField] internal float baseGravity = 2f;
-    [SerializeField] internal float fallMultiplier = 2f;
-    [SerializeField] internal float maxFallSpeed = 18f;
-    #endregion
-
-    #region Combat Variables
-    [Header("Combat Variables")]
-    [SerializeField] private LayerMask attackableLayerMask;
-    [SerializeField] private float basicAttackTime = 0.2f;
-    [SerializeField] internal float attackRange = 0.5f;
-
-    
-    [SerializeField] internal Transform attackUpPosition;
-    [SerializeField] internal Transform attackDownPosition;
-    [SerializeField] internal Transform attackFrontPosition;
-    [SerializeField] internal Transform attackBackPosition;
-
-
-    [SerializeField] internal float pushBackMltp = 5f;
-    #endregion
-
-
+    //---------------------------------------------------------------------------------------------------------------------
+    // Methods: Start(), Update()
     #region Unity Methods
     void Start()
     {
         if (_parentScript == null) _parentScript = GetComponent<PlayerParentScript>();
+        _attackKeys = new[] {
+            GameManager.Instance.AttackUp,
+            GameManager.Instance.AttackDown,
+            GameManager.Instance.AttackRight,
+            GameManager.Instance.AttackLeft
+        };
 
     }
 
@@ -69,9 +33,25 @@ public class PlayerMovementScript : MonoBehaviour
         AirBorneCheck();
         ProcessAttacks();
     }
+    #endregion //
+    //---------------------------------------------------------------------------------------------------------------------
+
+    //---------------------------------------------------------------------------------------------------------------------
+    // Methods: Jump(), WallJumpProcess(), WallJump(), ForceFlip(), ProcessAcceleration(), HorizontalMovement()
+    #region Movement Methods
+
+    #region Movement Variables
+    [Header("Horizontal Movement Variables")]
+    internal bool canMove = true;
+    internal float HorizontalInput;
+    [SerializeField] internal float movementSpeed = 5f;
+    [SerializeField] internal float jumpForce = 10f;
+    private float accelerator = 1f;
+
+    [Header("Jump Variables")]
+    internal bool isJumping = false;
     #endregion
 
-    #region Movement Methods
     internal void Jump()
     {
         // Jumping from the ground
@@ -83,6 +63,13 @@ public class PlayerMovementScript : MonoBehaviour
         }
 
     }
+
+    #region Wall Jump Variables
+    [Header("Wall Jump Variables")]
+    internal float wallJumpDirection;
+    [SerializeField] internal float wallJumpTime = 0.5f;
+    [SerializeField] internal Vector2 wallJumpForce = new Vector2(5f, 10f);
+    #endregion
 
     private void WallJumpProcess()
     {
@@ -101,7 +88,7 @@ public class PlayerMovementScript : MonoBehaviour
         canMove = false; // Important flag that affects makes a wall jump uninterruptible 
      
         accelerator = 0f;
-        wallJumpDirection = _parentScript.isFacingRight ? -1 : 1; // Scale velocity vector based on the direction of the player 
+        wallJumpDirection = _parentScript.isFacingRight ? -1 : 1; // Scale velocity vector based on the reverse direction of the player 
         _parentScript._rb.velocity = new Vector2(wallJumpDirection * wallJumpForce.x, wallJumpForce.y);
         
 
@@ -176,21 +163,38 @@ public class PlayerMovementScript : MonoBehaviour
         
     }
     #endregion
+    //---------------------------------------------------------------------------------------------------------------------
 
+    //---------------------------------------------------------------------------------------------------------------------
+    // Methods: ProcessAttacks(), AttackCoroutine()
     #region Combat Methods
+
+    #region Combat Variables
+    [Header("Combat Variables")]
+    [SerializeField] private LayerMask attackableLayerMask;
+    [SerializeField] private float basicAttackTime = 0.2f;
+    [SerializeField] internal float attackRange = 0.5f;
+    internal bool canAttack = true;
+
+    private KeyCode[] _attackKeys;
+
+    [SerializeField] internal Transform attackUpPosition;
+    [SerializeField] internal Transform attackDownPosition;
+    [SerializeField] internal Transform attackFrontPosition;
+    [SerializeField] internal Transform attackBackPosition;
+
+
+    [SerializeField] internal float pushBackMltp = 5f;
+    #endregion
+
     private void ProcessAttacks()
     {
-        List<KeyCode> possibleAttacks = new List<KeyCode>()
-        {
-            GameManager.Instance.AttackUp,
-            GameManager.Instance.AttackDown,
-            GameManager.Instance.AttackRight,
-            GameManager.Instance.AttackLeft
-        };
+        if (!canMove || !canAttack)
+            return;
 
-        foreach (KeyCode possibleInput in possibleAttacks)
+        foreach (KeyCode possibleInput in _attackKeys)
         {
-            if(Input.GetKeyDown(possibleInput) && canMove)
+            if(Input.GetKeyDown(possibleInput))
             {
                 StartCoroutine(AttackCoroutine(possibleInput, pushBackMltp));
             }
@@ -200,6 +204,7 @@ public class PlayerMovementScript : MonoBehaviour
     private IEnumerator AttackCoroutine(KeyCode keyPressed, float attackPower)
     {
         canMove = false;
+        canAttack = false;
 
         Vector2 recoilDir = Vector2.zero;
         Vector2 attackPos = Vector2.zero;
@@ -225,21 +230,19 @@ public class PlayerMovementScript : MonoBehaviour
         {
             // Make it possible to compare isFacingRight with attack direction for easier calculation of recoil, direction and animation
             bool isPressingRight = keyPressed == GameManager.Instance.AttackRight;
+            recoilDir = isPressingRight ? Vector2.left : Vector2.right; // Recoil direction is opposite to the attack direction
 
             if (isPressingRight == _parentScript.isFacingRight)
             {
                 attackPos = attackFrontPosition.position;
                 animationTime = _parentScript._animScript.attackFrontLockTime;
                 _parentScript._animScript.StartGivenAnimation(PlayerAnimScript.AttackFront, animationTime);
-                recoilDir = isPressingRight ? Vector2.left : Vector2.right; // Recoil direction is opposite to the attack direction
             }
             else if (isPressingRight != _parentScript.isFacingRight)
             {
-
                 attackPos = attackBackPosition.position;
                 animationTime = _parentScript._animScript.attackBackLockTime;
                 _parentScript._animScript.StartGivenAnimation(PlayerAnimScript.AttackBack, animationTime);
-                recoilDir = isPressingRight ? Vector2.left : Vector2.right; // Recoil direction is opposite to the attack direction
             }
 
         }
@@ -248,27 +251,35 @@ public class PlayerMovementScript : MonoBehaviour
 
         if (objectHit != null)
         {
-
-            // Apply recoil to the player if they hit something
             _parentScript._rb.velocity = recoilDir * attackPower;
-            yield return new WaitForSeconds(basicAttackTime);
-            // Note: We don't restore old velocity here because the recoil creates a new trajectory
+            objectHit.GetComponent<EnemyCombat>()?.Caller();
         }
-        else
-        {
-            // If they didn't hit anything, wait out the rest of the attack time
-            yield return new WaitForSeconds(basicAttackTime);
+            
 
-        }
-
+        yield return new WaitForSeconds(basicAttackTime);
         canMove = true;
 
+        yield return new WaitForSeconds(animationTime - basicAttackTime);
+        canAttack = true;
     }
     #endregion
+    //---------------------------------------------------------------------------------------------------------------------
 
+    //---------------------------------------------------------------------------------------------------------------------
+    // Methods: WallSliding(), GravityHandle()
+    #region Physics related Methods
 
+    #region External Forces Variables
+    [Header("Gravity Variables")]
+    [SerializeField] internal float baseGravity = 2f;
+    [SerializeField] internal float fallMultiplier = 2f;
+    [SerializeField] internal float maxFallSpeed = 18f;
 
-    #region Physics Methods
+    [Header("Wall Movement Variables")]
+    [SerializeField] internal float wallSlideSpeed = 2f;
+    internal bool isWallSliding = false;
+    #endregion
+
     private void WallSliding()
     {
         if (WallCheck() && !GroundCheck() && HorizontalInput != 0)
@@ -299,7 +310,10 @@ public class PlayerMovementScript : MonoBehaviour
         }
     }
     #endregion
+    //---------------------------------------------------------------------------------------------------------------------
 
+    //---------------------------------------------------------------------------------------------------------------------
+    // Methods: GeneralContactCheck(), GroundCheck(), WallCheck(), AirBorneCheck()
     #region Checks
     internal bool GeneralContactCheck()
     {
@@ -328,5 +342,6 @@ public class PlayerMovementScript : MonoBehaviour
 
     }
     #endregion
+    //---------------------------------------------------------------------------------------------------------------------
 
 }
